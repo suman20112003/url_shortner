@@ -2,9 +2,26 @@ const Url = require('../models/Url')
 const validateUrl = require('../utils/validateUrl')
 const generateUniqueId = require('../utils/generateUniqueId')
 
+function getBaseUrl(req) {
+    if (process.env.BASE_URL) {
+        return process.env.BASE_URL
+    }
+
+    const forwardedProto = req.headers['x-forwarded-proto']
+    const forwardedHost = req.headers['x-forwarded-host']
+    const host = forwardedHost || req.get('host')
+
+    if (host) {
+        const protocol = forwardedProto || req.protocol || 'http'
+        return `${protocol}://${host}`
+    }
+
+    return `http://localhost:${process.env.PORT || 5000}`
+}
+
 async function createShortUrl(req, res) {
     const { url } = req.body
-    const clientUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`
+    const clientUrl = getBaseUrl(req)
 
     // checking if the url is valid or not
     if(!validateUrl(url)) {

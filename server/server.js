@@ -8,6 +8,7 @@ const indexRouter = require('./routes/index')
 
 const PORT = Number.parseInt(String(process.env.PORT || 5000).replace(/;\s*$/, ''), 10)
 
+app.set('trust proxy', true)
 
 app.get('/test', (req, res) => {
     res.send('test route')
